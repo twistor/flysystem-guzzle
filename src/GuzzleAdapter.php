@@ -61,7 +61,7 @@ class GuzzleAdapter implements AdapterInterface
 
         $this->base .= $parsed['host'] . '/';
 
-        if (isset($parsed['path']) && $parts['path'] !== '/') {
+        if (isset($parsed['path']) && $parsed['path'] !== '/') {
             $this->base .= trim($parsed['path'], '/') . '/';
         }
     }
