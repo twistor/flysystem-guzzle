@@ -2,9 +2,9 @@
 
 namespace Twistor\Flysystem;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
+use Guzzle\Http\Client;
+use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Exception\BadResponseException;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Util\MimeType;
@@ -114,8 +114,8 @@ class GuzzleAdapter implements AdapterInterface
     public function getMetadata($path)
     {
         try {
-            $response = $this->client->head($this->base . $path);
-        } catch (ClientException $e) {
+            $response = $this->client->head($this->base . $path)->send();
+        } catch (BadResponseException $e) {
             return false;
         }
 
@@ -134,7 +134,7 @@ class GuzzleAdapter implements AdapterInterface
             'type' => 'file',
             'path' => $path,
             'timestamp' => (int) strtotime($response->getHeader('Last-Modified')),
-            'size' => (int) $response->getHeader('Content-Length'),
+            'size' => (int) trim($response->getHeader('Content-Length')),
             'visibility' => $this->visibility,
             'mimetype' => $mimetype,
         ];
@@ -181,12 +181,12 @@ class GuzzleAdapter implements AdapterInterface
     public function has($path)
     {
         try {
-            $response = $this->client->head($this->base . $path);
-        } catch (ClientException $e) {
+            $response = $this->client->head($this->base . $path)->send();
+        } catch (BadResponseException $e) {
             return false;
         }
 
-        return (int) $response->getStatusCode() === 200;
+        return $response->getStatusCode() === 200;
     }
 
     /**
@@ -224,8 +224,8 @@ class GuzzleAdapter implements AdapterInterface
     public function readStream($path)
     {
         try {
-            $stream = $this->client->get($this->base . $path)->getBody()->detach();
-        } catch (ClientException $e) {
+            $stream = $this->client->get($this->base . $path)->send()->getBody()->getStream();
+        } catch (BadResponseException $e) {
             return false;
         }
 

@@ -2,11 +2,9 @@
 
 namespace Twistor\Flysystem;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Ring\Client\MockHandler;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\Mock;
+use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\Mock\MockPlugin;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Twistor\Flysystem\GuzzleAdapter;
@@ -85,22 +83,22 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testGetMetadata()
     {
-        $mock = new Mock([
-            new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']),
-            new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']),
-            new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']),
-            new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']),
-            new Response(200),
-            new Response(200),
-            new Response(200),
-            new Response(200),
-            new Response(404),
-            new Response(404),
-            new Response(404),
-            new Response(404),
-        ]);
+        $plugin = new MockPlugin();
 
-        $this->client->getEmitter()->attach($mock);
+        $plugin->addResponse(new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']));
+        $plugin->addResponse(new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']));
+        $plugin->addResponse(new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']));
+        $plugin->addResponse(new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']));
+        $plugin->addResponse(new Response(200));
+        $plugin->addResponse(new Response(200));
+        $plugin->addResponse(new Response(200));
+        $plugin->addResponse(new Response(200));
+        $plugin->addResponse(new Response(404));
+        $plugin->addResponse(new Response(404));
+        $plugin->addResponse(new Response(404));
+        $plugin->addResponse(new Response(404));
+
+        $this->client->addSubscriber($plugin);
 
         $response = [
             'type' => 'file',
@@ -162,13 +160,13 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testHas()
     {
-        $mock = new Mock([
-            new Response(200),
-            new Response(404),
-            new Response(202),
-        ]);
+        $plugin = new MockPlugin();
 
-        $this->client->getEmitter()->attach($mock);
+        $plugin->addResponse(new Response(200));
+        $plugin->addResponse(new Response(404));
+        $plugin->addResponse(new Response(202));
+
+        $this->client->addSubscriber($plugin);
 
         $this->assertTrue($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
@@ -188,12 +186,12 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testRead()
     {
-        $mock = new Mock([
-            new Response(200, [], Stream::factory('foo')),
-            new Response(404),
-        ]);
+        $plugin = new MockPlugin();
 
-        $this->client->getEmitter()->attach($mock);
+        $plugin->addResponse(new Response(200, [], 'foo'));
+        $plugin->addResponse(new Response(404));
+
+        $this->client->addSubscriber($plugin);
 
         $response = $this->adapter->read('test.html');
         $this->assertSame($response['path'], 'test.html');
@@ -219,12 +217,12 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testReadStream()
     {
-        $mock = new Mock([
-            new Response(200, [], Stream::factory('foo')),
-            new Response(404),
-        ]);
+        $plugin = new MockPlugin();
 
-        $this->client->getEmitter()->attach($mock);
+        $plugin->addResponse(new Response(200, [], 'foo'));
+        $plugin->addResponse(new Response(404));
+
+        $this->client->addSubscriber($plugin);
 
         $response = $this->adapter->readStream('test.html');
         $this->assertSame($response['path'], 'test.html');
