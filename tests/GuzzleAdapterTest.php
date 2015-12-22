@@ -167,7 +167,6 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
     {
         $mock = new MockHandler([
             new Response(200),
-            new Response(404),
             new Response(202),
             new Response(500),
             new Response(405),
@@ -179,7 +178,6 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->adapter = new GuzzleAdapter('http://example.com', $client);
 
         $this->assertTrue($this->adapter->has('foo.html'));
-        $this->assertFalse($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
 
