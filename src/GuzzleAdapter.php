@@ -46,12 +46,14 @@ class GuzzleAdapter implements AdapterInterface
     /**
      * Constructs a GuzzleAdapter object.
      *
-     * @param string                       $base   The base URL.
-     * @param \Guzzle\Http\ClientInterface $client An optional Guzzle client.
+     * @param string                       $base         The base URL.
+     * @param \Guzzle\Http\ClientInterface $client       An optional Guzzle client.
+     * @param bool                         $supportsHead Whether the client supports HEAD requests.
      */
-    public function __construct($base, ClientInterface $client = null)
+    public function __construct($base, ClientInterface $client = null, $supportsHead = true)
     {
         $this->client = $client ?: new Client();
+        $this->supportsHead = $supportsHead;
 
         $parsed = parse_url($base);
         $this->base = $parsed['scheme'] . '://';
