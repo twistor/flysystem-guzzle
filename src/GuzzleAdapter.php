@@ -291,7 +291,7 @@ class GuzzleAdapter implements AdapterInterface
             return false;
         }
 
-        if ($response->getStatusCode() !== 200) {
+        if ((int) $response->getStatusCode() !== 200) {
             return false;
         }
 
@@ -313,7 +313,7 @@ class GuzzleAdapter implements AdapterInterface
             return false;
         }
 
-        if ($response->getStatusCode() !== 200) {
+        if ((int) $response->getStatusCode() !== 200) {
             return false;
         }
 
