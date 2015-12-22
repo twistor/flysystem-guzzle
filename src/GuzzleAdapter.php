@@ -36,7 +36,7 @@ class GuzzleAdapter implements AdapterInterface
     protected $visibility = AdapterInterface::VISIBILITY_PUBLIC;
 
     /**
-     * Constructs an Http object.
+     * Constructs a GuzzleAdapter object.
      *
      * @param string                      $base   The base URL.
      * @param \GuzzleHttp\ClientInterface $client An optional Guzzle client.
@@ -113,9 +113,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function getMetadata($path)
     {
-        try {
-            $response = $this->client->head($this->base . $path)->send();
-        } catch (BadResponseException $e) {
+        if (! $response = $this->head($path)) {
             return false;
         }
 
@@ -180,9 +178,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function has($path)
     {
-        try {
-            $response = $this->client->head($this->base . $path)->send();
-        } catch (BadResponseException $e) {
+        if (! $response = $this->head($path)) {
             return false;
         }
 
@@ -202,20 +198,14 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function read($path)
     {
-        if (! $result = $this->readStream($path)) {
+        if (! $response = $this->get($path)) {
             return false;
         }
 
-        $result['contents'] = stream_get_contents($result['stream']);
-
-        if ($result['contents'] === false) {
-            return false;
-        }
-
-        fclose($result['stream']);
-        unset($result['stream']);
-
-        return $result;
+        return [
+            'path' => $path,
+            'contents' => (string) $response->getBody(),
+        ];
     }
 
     /**
@@ -223,15 +213,13 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function readStream($path)
     {
-        try {
-            $stream = $this->client->get($this->base . $path)->send()->getBody()->getStream();
-        } catch (BadResponseException $e) {
+        if (! $response = $this->get($path)) {
             return false;
         }
 
         return [
             'path' => $path,
-            'stream' => $stream,
+            'stream' => $response->getBody()->getStream(),
         ];
     }
 
@@ -285,5 +273,49 @@ class GuzzleAdapter implements AdapterInterface
     public function writeStream($path, $resource, Config $config)
     {
         return false;
+    }
+
+    /**
+     * Performs a GET request.
+     *
+     * @param string $path The path to GET.
+     *
+     * @return Response|false The response or false if failed.
+     */
+    protected function get($path)
+    {
+        try {
+            $response = $this->client->get($this->base . $path)->send();
+        } catch (BadResponseException $e) {
+            return false;
+        }
+
+        if ($response->getStatusCode() !== 200) {
+            return false;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Performs a HEAD request.
+     *
+     * @param string $path The path to HEAD.
+     *
+     * @return Response|false The response or false if failed.
+     */
+    protected function head($path)
+    {
+        try {
+            $response = $this->client->head($this->base . $path)->send();
+        } catch (BadResponseException $e) {
+            return false;
+        }
+
+        if ($response->getStatusCode() !== 200) {
+            return false;
+        }
+
+        return $response;
     }
 }

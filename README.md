@@ -19,7 +19,7 @@ composer require twistor/flysystem-guzzle
 ```php
 <?php
 
-use GuzzleHttp\Client;
+use Guzzle\Http\Client;
 use Twistor\Flysystem\GuzzleAdapter;
 
 $adapter = new GuzzleAdapter('http://example.com');
