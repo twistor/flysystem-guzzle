@@ -9,9 +9,6 @@ An HTTP adapter for Flysystem that uses Guzzle.
 * Guzzle 3
 [![Build Status](https://img.shields.io/travis/twistor/flysystem-guzzle/guzzle-3.svg?style=flat-square)](https://travis-ci.org/twistor/flysystem-guzzle)
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/twistor/flysystem-guzzle/guzzle-3.svg?style=flat-square)](https://scrutinizer-ci.com/g/twistor/flysystem-guzzle/?branch=guzzle-3)
-* Guzzle 4
-[![Build Status](https://img.shields.io/travis/twistor/flysystem-guzzle/guzzle-4.svg?style=flat-square)](https://travis-ci.org/twistor/flysystem-guzzle)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/twistor/flysystem-guzzle/guzzle-4.svg?style=flat-square)](https://scrutinizer-ci.com/g/twistor/flysystem-guzzle/?branch=guzzle-4)
 * Guzzle 5
 [![Build Status](https://img.shields.io/travis/twistor/flysystem-guzzle/guzzle-5.svg?style=flat-square)](https://travis-ci.org/twistor/flysystem-guzzle)
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/twistor/flysystem-guzzle/guzzle-5.svg?style=flat-square)](https://scrutinizer-ci.com/g/twistor/flysystem-guzzle/?branch=guzzle-5)
