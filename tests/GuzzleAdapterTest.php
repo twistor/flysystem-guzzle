@@ -82,6 +82,7 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      * @covers ::getMimetype
      * @covers ::getSize
      * @covers ::getTimestamp
+     * @covers ::head
      */
     public function testGetMetadata()
     {
@@ -159,6 +160,7 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::has
+     * @covers ::head
      */
     public function testHas()
     {
@@ -185,12 +187,14 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::read
+     * @covers ::get
      */
     public function testRead()
     {
         $mock = new Mock([
             new Response(200, [], Stream::factory('foo')),
             new Response(404),
+            new Response(202),
         ]);
 
         $this->client->getEmitter()->attach($mock);
@@ -200,22 +204,12 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo', $response['contents']);
 
         $this->assertFalse($this->adapter->read('bar.html'));
-
-        // Test stream_get_contents() returns false;
-        $adapter = $this->getMockBuilder('Twistor\Flysystem\GuzzleAdapter')
-                        ->setConstructorArgs(['http://example.com'])
-                        ->setMethods(['readStream'])
-                        ->getMock();
-
-        $adapter->method('readStream')
-                ->will($this->returnValue(['stream' => false]));
-
-        $this->assertFalse($adapter->read('foo.html'));
-
+        $this->assertFalse($this->adapter->read('baz.html'));
     }
 
     /**
      * @covers ::readStream
+     * @covers ::get
      */
     public function testReadStream()
     {
@@ -287,13 +281,3 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->adapter->writeStream('file.txt', 'contents', new Config()));
     }
 }
-
-function stream_get_contents($handle)
-{
-    if ($handle === false) {
-        return $handle;
-    }
-
-    return \stream_get_contents($handle);
-}
-
