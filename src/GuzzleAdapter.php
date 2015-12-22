@@ -186,7 +186,7 @@ class GuzzleAdapter implements AdapterInterface
             return false;
         }
 
-        return $response->getStatusCode() === 200;
+        return (int) $response->getStatusCode() === 200;
     }
 
     /**
