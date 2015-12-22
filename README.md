@@ -13,3 +13,18 @@ An HTTP adapter for Flysystem that uses Guzzle.
 ```bash
 composer require twistor/flysystem-guzzle
 ```
+
+## Usage
+
+```php
+<?php
+
+use GuzzleHttp\Client;
+use Twistor\Flysystem\GuzzleAdapter;
+
+$adapter = new GuzzleAdapter('http://example.com');
+
+// Optionally, you can add a configured client.
+$client = new Client();
+$adapter = new GuzzleAdapter('http://example.com', $client);
+```
