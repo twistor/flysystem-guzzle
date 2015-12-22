@@ -120,7 +120,7 @@ class GuzzleAdapter implements AdapterInterface
         }
 
         if ($mimetype = $response->getHeader('Content-Type')) {
-            list($mimetype) = explode(';', $mimetype, 2);
+            list($mimetype) = explode(';', reset($mimetype), 2);
             $mimetype = trim($mimetype);
         } else {
             // Remove any query strings or fragments.
@@ -130,11 +130,14 @@ class GuzzleAdapter implements AdapterInterface
             $mimetype = $extension ? MimeType::detectByFileExtension($extension) : 'text/plain';
         }
 
+        $last_modified = $response->getHeader('Last-Modified');
+        $length = $response->getHeader('Content-Length');
+
         return [
             'type' => 'file',
             'path' => $path,
-            'timestamp' => (int) strtotime($response->getHeader('Last-Modified')),
-            'size' => (int) $response->getHeader('Content-Length'),
+            'timestamp' => (int) strtotime(reset($last_modified)),
+            'size' => (int) reset($length),
             'visibility' => $this->visibility,
             'mimetype' => $mimetype,
         ];
@@ -186,7 +189,7 @@ class GuzzleAdapter implements AdapterInterface
             return false;
         }
 
-        return (int) $response->getStatusCode() === 200;
+        return $response->getStatusCode() === 200;
     }
 
     /**

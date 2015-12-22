@@ -3,10 +3,10 @@
 namespace Twistor\Flysystem;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Ring\Client\MockHandler;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Response;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Twistor\Flysystem\GuzzleAdapter;
@@ -85,7 +85,7 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testGetMetadata()
     {
-        $mock = new Mock([
+        $mock = new MockHandler([
             new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']),
             new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']),
             new Response(200, ['Content-Type' => 'image/jpeg; charset=utf-8', 'Content-Length' => 42, 'Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']),
@@ -100,7 +100,8 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
             new Response(404),
         ]);
 
-        $this->client->getEmitter()->attach($mock);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $this->adapter = new GuzzleAdapter('http://example.com', $client);
 
         $response = [
             'type' => 'file',
@@ -162,13 +163,14 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testHas()
     {
-        $mock = new Mock([
+        $mock = new MockHandler([
             new Response(200),
             new Response(404),
             new Response(202),
         ]);
 
-        $this->client->getEmitter()->attach($mock);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $this->adapter = new GuzzleAdapter('http://example.com', $client);
 
         $this->assertTrue($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
@@ -188,12 +190,13 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testRead()
     {
-        $mock = new Mock([
-            new Response(200, [], Stream::factory('foo')),
+        $mock = new MockHandler([
+            new Response(200, [], Psr7\stream_for('foo')),
             new Response(404),
         ]);
 
-        $this->client->getEmitter()->attach($mock);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $this->adapter = new GuzzleAdapter('http://example.com', $client);
 
         $response = $this->adapter->read('test.html');
         $this->assertSame($response['path'], 'test.html');
@@ -219,12 +222,13 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testReadStream()
     {
-        $mock = new Mock([
-            new Response(200, [], Stream::factory('foo')),
+        $mock = new MockHandler([
+            new Response(200, [], Psr7\stream_for('foo')),
             new Response(404),
         ]);
 
-        $this->client->getEmitter()->attach($mock);
+        $this->client = new Client(['handler' => HandlerStack::create($mock)]);
+        $this->adapter = new GuzzleAdapter('http://example.com', $this->client);
 
         $response = $this->adapter->readStream('test.html');
         $this->assertSame($response['path'], 'test.html');
