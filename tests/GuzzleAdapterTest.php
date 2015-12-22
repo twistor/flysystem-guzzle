@@ -167,12 +167,21 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $plugin->addResponse(new Response(200));
         $plugin->addResponse(new Response(404));
         $plugin->addResponse(new Response(202));
+        $plugin->addResponse(new Response(500));
+        $plugin->addResponse(new Response(405));
+        $plugin->addResponse(new Response(200));
+        $plugin->addResponse(new Response(200));
 
         $this->client->addSubscriber($plugin);
 
         $this->assertTrue($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
+        $this->assertFalse($this->adapter->has('foo.html'));
+
+        // Test get fallback.
+        $this->assertTrue($this->adapter->has('foo.html'));
+        $this->assertTrue($this->adapter->has('foo.html'));
     }
 
     /**
