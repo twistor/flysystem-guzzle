@@ -5,6 +5,7 @@ namespace Twistor\Flysystem;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\ClientException;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Util\MimeType;
@@ -14,6 +15,13 @@ use League\Flysystem\Util\MimeType;
  */
 class GuzzleAdapter implements AdapterInterface
 {
+    /**
+     * Whether this endpoint supports head requests.
+     *
+     * @var bool
+     */
+    protected $supportsHead = true;
+
     /**
      * The base URL.
      *
@@ -36,7 +44,7 @@ class GuzzleAdapter implements AdapterInterface
     protected $visibility = AdapterInterface::VISIBILITY_PUBLIC;
 
     /**
-     * Constructs an Http object.
+     * Constructs a GuzzleAdapter object.
      *
      * @param string                      $base   The base URL.
      * @param \GuzzleHttp\ClientInterface $client An optional Guzzle client.
@@ -309,8 +317,20 @@ class GuzzleAdapter implements AdapterInterface
      */
     protected function head($path)
     {
+        if (! $this->supportsHead) {
+            return $this->get($path);
+        }
+
         try {
             $response = $this->client->head($this->base . $path);
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() === 405) {
+                $this->supportsHead = false;
+
+                return $this->get($path);
+            }
+
+            return false;
         } catch (BadResponseException $e) {
             return false;
         }
