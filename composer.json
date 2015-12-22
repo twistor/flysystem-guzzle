@@ -2,8 +2,8 @@
     "name": "twistor/flysystem-guzzle",
     "description": "An HTTP adapter for Flysystem that uses Guzzle.",
     "keywords": [
-        "league",
-        "twistor/flysystem-guzzle"
+        "flysystem",
+        "guzzle"
     ],
     "type": "library",
     "license": "MIT",
