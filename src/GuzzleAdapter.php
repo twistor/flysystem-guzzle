@@ -186,11 +186,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function has($path)
     {
-        if (! $response = $this->head($path)) {
-            return false;
-        }
-
-        return $response->getStatusCode() === 200;
+        return (bool) $this->head($path);
     }
 
     /**
