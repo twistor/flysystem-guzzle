@@ -32,7 +32,7 @@ class GuzzleAdapter implements AdapterInterface
     /**
      * The Guzzle HTTP client.
      *
-     * @var \GuzzleHttp\ClientInterface
+     * @var \Guzzle\Http\ClientInterface
      */
     protected $client;
 
@@ -46,8 +46,8 @@ class GuzzleAdapter implements AdapterInterface
     /**
      * Constructs a GuzzleAdapter object.
      *
-     * @param string                      $base   The base URL.
-     * @param \GuzzleHttp\ClientInterface $client An optional Guzzle client.
+     * @param string                       $base   The base URL.
+     * @param \Guzzle\Http\ClientInterface $client An optional Guzzle client.
      */
     public function __construct($base, ClientInterface $client = null)
     {
@@ -288,7 +288,7 @@ class GuzzleAdapter implements AdapterInterface
      *
      * @param string $path The path to GET.
      *
-     * @return Response|false The response or false if failed.
+     * @return \Guzzle\Http\Message\Response|false The response or false if failed.
      */
     protected function get($path)
     {
@@ -310,7 +310,7 @@ class GuzzleAdapter implements AdapterInterface
      *
      * @param string $path The path to HEAD.
      *
-     * @return Response|false The response or false if failed.
+     * @return \Guzzle\Http\Message\Response|false The response or false if failed.
      */
     protected function head($path)
     {
