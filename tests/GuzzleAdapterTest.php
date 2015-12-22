@@ -28,8 +28,6 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        ini_set('allow_url_fopen', '0');
-
         $this->client = new Client();
         $this->adapter = new GuzzleAdapter('http://example.com', $this->client);
     }
