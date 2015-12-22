@@ -4,7 +4,6 @@ namespace Twistor\Flysystem;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
-use GuzzleHttp\Ring\Client\MockHandler;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Subscriber\Mock;
 use League\Flysystem\AdapterInterface;
