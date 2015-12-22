@@ -45,7 +45,7 @@ class GuzzleAdapter implements AdapterInterface
     protected $visibility = AdapterInterface::VISIBILITY_PUBLIC;
 
     /**
-     * Constructs an Http object.
+     * Constructs a GuzzleAdapter object.
      *
      * @param string                      $base   The base URL.
      * @param \GuzzleHttp\ClientInterface $client An optional Guzzle client.
