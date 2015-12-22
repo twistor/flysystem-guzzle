@@ -4,7 +4,7 @@ namespace Twistor\Flysystem;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Message\Response;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
@@ -287,7 +287,7 @@ class GuzzleAdapter implements AdapterInterface
     {
         try {
             $response = $this->client->get($this->base . $path);
-        } catch (ClientException $e) {
+        } catch (BadResponseException $e) {
             return false;
         }
 
@@ -309,7 +309,7 @@ class GuzzleAdapter implements AdapterInterface
     {
         try {
             $response = $this->client->head($this->base . $path);
-        } catch (ClientException $e) {
+        } catch (BadResponseException $e) {
             return false;
         }
 
