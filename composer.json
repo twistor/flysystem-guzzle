@@ -1,0 +1,18 @@
+{
+    "name": "twistor/flysystem-guzzle",
+    "description": "An HTTP adapter for Flysystem that uses Guzzle.",
+    "keywords": [
+        "flysystem",
+        "guzzle"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/twistor/flysystem-guzzle",
+    "authors": [
+        {
+            "name": "Chris Leppanen",
+            "email": "chris.leppanen@gmail.com",
+            "role": "Developer"
+        }
+    ]
+}
