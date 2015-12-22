@@ -168,6 +168,10 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
             new Response(200),
             new Response(404),
             new Response(202),
+            new Response(500),
+            new Response(405),
+            new Response(200),
+            new Response(200),
         ]);
 
         $this->client->getEmitter()->attach($mock);
@@ -175,6 +179,11 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
         $this->assertFalse($this->adapter->has('foo.html'));
+        $this->assertFalse($this->adapter->has('foo.html'));
+
+        // Test get fallback.
+        $this->assertTrue($this->adapter->has('foo.html'));
+        $this->assertTrue($this->adapter->has('foo.html'));
     }
 
     /**
