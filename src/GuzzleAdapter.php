@@ -6,9 +6,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Uri;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Util\MimeType;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Uses Guzzle as a backend for HTTP URLs.
@@ -112,28 +114,10 @@ class GuzzleAdapter implements AdapterInterface
             return false;
         }
 
-        if ($mimetype = $response->getHeader('Content-Type')) {
-            list($mimetype) = explode(';', reset($mimetype), 2);
-            $mimetype = trim($mimetype);
-        } else {
-            // Remove any query strings or fragments.
-            list($path) = explode('#', $path, 2);
-            list($path) = explode('?', $path, 2);
-            $extension = pathinfo($path, PATHINFO_EXTENSION);
-            $mimetype = $extension ? MimeType::detectByFileExtension($extension) : 'text/plain';
-        }
-
-        $last_modified = $response->getHeader('Last-Modified');
-        $length = $response->getHeader('Content-Length');
-
         return [
             'type' => 'file',
             'path' => $path,
-            'timestamp' => (int) strtotime(reset($last_modified)),
-            'size' => (int) reset($length),
-            'visibility' => $this->visibility,
-            'mimetype' => $mimetype,
-        ];
+        ] + $this->getResponseMetadata($path, $response);
     }
 
     /**
@@ -199,7 +183,7 @@ class GuzzleAdapter implements AdapterInterface
         return [
             'path' => $path,
             'contents' => (string) $response->getBody(),
-        ];
+        ] + $this->getResponseMetadata($path, $response);
     }
 
     /**
@@ -214,7 +198,7 @@ class GuzzleAdapter implements AdapterInterface
         return [
             'path' => $path,
             'stream' => $response->getBody()->detach(),
-        ];
+        ] + $this->getResponseMetadata($path, $response);
     }
 
     /**
@@ -230,11 +214,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function setVisibility($path, $visibility)
     {
-        if ($visibility === $this->visibility) {
-            return $this->getVisibility($path);
-        }
-
-        return false;
+        throw new \LogicException('GuzzleAdapter does not support visibility. Path: ' . $path . ', visibility: ' . $visibility);
     }
 
     /**
@@ -289,6 +269,61 @@ class GuzzleAdapter implements AdapterInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Returns the mimetype of a response.
+     *
+     * @param string $path
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *
+     * @return string
+     */
+    protected function getMimetypeFromResponse($path, ResponseInterface $response) {
+        if ($response->hasHeader('Content-Type')) {
+
+            $mimetype = reset($response->getHeader('Content-Type'));
+            list($mimetype) = explode(';', $mimetype, 2);
+
+            return trim($mimetype);
+        }
+
+        // Try to guess from file extension.
+        $uri = new Uri($path);
+
+        return MimeType::detectByFilename($uri->getPath());
+    }
+
+    /**
+     * Returns the metadata array for a response.
+     *
+     * @param string $path
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *
+     * @return array
+     */
+    protected function getResponseMetadata($path, ResponseInterface $response) {
+        $metadata = [
+            'visibility' => $this->visibility,
+            'mimetype' => $this->getMimetypeFromResponse($path, $response),
+        ];
+
+        if ($response->hasHeader('Last-Modified')) {
+            $last_modified = strtotime(reset($response->getHeader('Last-Modified')));
+            if ($last_modified !== false) {
+                $metadata['timestamp'] = $last_modified;
+            }
+        }
+
+        if ($response->hasHeader('Content-Length')) {
+            $length = reset($response->getHeader('Content-Length'));
+
+            if (is_numeric($length)) {
+                $metadata['size'] = (int) $length;
+            }
+        }
+
+        return $metadata;
     }
 
     /**

@@ -83,6 +83,8 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      * @covers ::getSize
      * @covers ::getTimestamp
      * @covers ::head
+     * @covers ::getResponseMetadata
+     * @covers ::getMimetypeFromResponse
      */
     public function testGetMetadata()
     {
@@ -107,10 +109,10 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $response = [
             'type' => 'file',
             'path' => 'foo.jpg',
-            'timestamp' => 816411488,
-            'size' => 42,
             'visibility' => AdapterInterface::VISIBILITY_PUBLIC,
             'mimetype' => 'image/jpeg',
+            'timestamp' => 816411488,
+            'size' => 42,
 
         ];
         $this->assertSame($response, $this->adapter->getMetadata('foo.jpg'));
@@ -120,9 +122,7 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
 
         $response = [
             'type' => 'file',
-            'path' => 'foo.jpg',
-            'timestamp' => 0,
-            'size' => 0,
+            'path' => 'foo.jpg?bar=bazz#fizz',
             'visibility' => AdapterInterface::VISIBILITY_PUBLIC,
             'mimetype' => 'image/jpeg',
         ];
@@ -251,13 +251,9 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
      */
     public function testSetVisibility()
     {
-        $response = [
-            'path' => 'foo.html',
-            'visibility' => AdapterInterface::VISIBILITY_PUBLIC,
-        ];
+        $this->setExpectedException(('\LogicException'));
 
-        $this->assertSame($response, $this->adapter->setVisibility('foo.html', AdapterInterface::VISIBILITY_PUBLIC));
-        $this->assertFalse($this->adapter->setVisibility('foo.html', AdapterInterface::VISIBILITY_PRIVATE));
+        $this->adapter->setVisibility('foo', AdapterInterface::VISIBILITY_PUBLIC);
     }
 
     /**
