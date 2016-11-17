@@ -52,28 +52,13 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function __construct($base, ClientInterface $client = null, $supportsHead = true)
     {
+        $this->base = rtrim($base, '/') . '/';
         $this->client = $client ?: new Client();
         $this->supportsHead = $supportsHead;
 
-        $parsed = parse_url($base);
-        $this->base = $parsed['scheme'] . '://';
-
-        if (isset($parsed['user'])) {
+        if (isset(parse_url($base)['user'])) {
             $this->visibility = AdapterInterface::VISIBILITY_PRIVATE;
-            $this->base .= $parsed['user'];
-
-            if (isset($parsed['pass']) && $parsed['pass'] !== '') {
-                $this->base .= ':' . $parsed['pass'];
-            }
-
-            $this->base .= '@';
         };
-
-        $this->base .= $parsed['host'] . '/';
-
-        if (isset($parsed['path']) && $parsed['path'] !== '/') {
-            $this->base .= trim($parsed['path'], '/') . '/';
-        }
     }
 
     /**
