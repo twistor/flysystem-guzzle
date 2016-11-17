@@ -12,7 +12,7 @@ use League\Flysystem\Config;
 use Twistor\Flysystem\GuzzleAdapter;
 
 /**
- * @coversDefaultClass \Twistor\Flysystem\GuzzleAdapter
+ * @covers \Twistor\Flysystem\GuzzleAdapter
  */
 class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
 {
@@ -32,10 +32,6 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->adapter = new GuzzleAdapter('http://example.com', $this->client);
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getBaseUrl
-     */
     public function testConstructor()
     {
         $adapter = new GuzzleAdapter('http://example.com/foo');
@@ -45,47 +41,26 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertSame('https://user:pass@example.com/foo/', $adapter->getBaseUrl());
     }
 
-    /**
-     * @covers ::copy
-     */
     public function testCopy()
     {
         $this->assertFalse($this->adapter->copy('file.txt', 'other.txt'));
     }
 
-    /**
-     * @covers ::createDir
-     */
     public function testCreateDir()
     {
         $this->assertFalse($this->adapter->createDir('file.txt/dir', new Config()));
     }
 
-    /**
-     * @covers ::delete
-     */
     public function testDelete()
     {
         $this->assertFalse($this->adapter->delete('file.txt'));
     }
 
-    /**
-     * @covers ::deleteDir
-     */
     public function testDeleteDir()
     {
         $this->assertFalse($this->adapter->deleteDir('dir'));
     }
 
-    /**
-     * @covers ::getMetaData
-     * @covers ::getMimetype
-     * @covers ::getSize
-     * @covers ::getTimestamp
-     * @covers ::head
-     * @covers ::getResponseMetadata
-     * @covers ::getMimetypeFromResponse
-     */
     public function testGetMetadata()
     {
         $mock = new MockHandler([
@@ -137,9 +112,6 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->adapter->getTimestamp('foot.jpg'));
     }
 
-    /**
-     * @covers ::getVisibility
-     */
     public function testGetVisibility()
     {
         $response = [
@@ -159,10 +131,6 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertSame($response, $adapter->getVisibility('foo.html'));
     }
 
-    /**
-     * @covers ::has
-     * @covers ::head
-     */
     public function testHas()
     {
         $mock = new MockHandler([
@@ -186,18 +154,11 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->adapter->has('foo.html'));
     }
 
-    /**
-     * @covers ::listContents
-     */
     public function testListContents()
     {
         $this->assertSame([], $this->adapter->listContents('dir'));
     }
 
-    /**
-     * @covers ::read
-     * @covers ::get
-     */
     public function testRead()
     {
         $mock = new MockHandler([
@@ -217,10 +178,6 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->adapter->read('baz.html'));
     }
 
-    /**
-     * @covers ::readStream
-     * @covers ::get
-     */
     public function testReadStream()
     {
         $mock = new MockHandler([
@@ -238,17 +195,11 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->adapter->readStream('bar.html'));
     }
 
-    /**
-     * @covers ::rename
-     */
     public function testRename()
     {
         $this->assertFalse($this->adapter->rename('file.txt', 'new_file.txt'));
     }
 
-    /**
-     * @covers ::setVisibility
-     */
     public function testSetVisibility()
     {
         $this->setExpectedException(('\LogicException'));
@@ -256,33 +207,21 @@ class GuzzleAdapterTest  extends \PHPUnit_Framework_TestCase
         $this->adapter->setVisibility('foo', AdapterInterface::VISIBILITY_PUBLIC);
     }
 
-    /**
-     * @covers ::update
-     */
     public function testUpdate()
     {
         $this->assertFalse($this->adapter->update('file.txt', 'contents', new Config()));
     }
 
-    /**
-     * @covers ::updateStream
-     */
     public function testUpdateStream()
     {
         $this->assertFalse($this->adapter->updateStream('file.txt', 'contents', new Config()));
     }
 
-    /**
-     * @covers ::write
-     */
     public function testWrite()
     {
         $this->assertFalse($this->adapter->write('file.txt', 'contents', new Config()));
     }
 
-    /**
-     * @covers ::writeStream
-     */
     public function testWriteStream()
     {
         $this->assertFalse($this->adapter->writeStream('file.txt', 'contents', new Config()));
