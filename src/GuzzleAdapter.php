@@ -280,10 +280,9 @@ class GuzzleAdapter implements AdapterInterface
      * @return string
      */
     protected function getMimetypeFromResponse($path, ResponseInterface $response) {
-        if ($response->hasHeader('Content-Type')) {
+        if ($mimetype = $response->getHeader('Content-Type')) {
 
-            $mimetype = reset($response->getHeader('Content-Type'));
-            list($mimetype) = explode(';', $mimetype, 2);
+            list($mimetype) = explode(';', reset($mimetype), 2);
 
             return trim($mimetype);
         }
@@ -308,15 +307,16 @@ class GuzzleAdapter implements AdapterInterface
             'mimetype' => $this->getMimetypeFromResponse($path, $response),
         ];
 
-        if ($response->hasHeader('Last-Modified')) {
-            $last_modified = strtotime(reset($response->getHeader('Last-Modified')));
+        if ($last_modified = $response->getHeader('Last-Modified')) {
+            $last_modified = strtotime(reset($last_modified));
+
             if ($last_modified !== false) {
                 $metadata['timestamp'] = $last_modified;
             }
         }
 
-        if ($response->hasHeader('Content-Length')) {
-            $length = reset($response->getHeader('Content-Length'));
+        if ($length = $response->getHeader('Content-Length')) {
+            $length = reset($length);
 
             if (is_numeric($length)) {
                 $metadata['size'] = (int) $length;
