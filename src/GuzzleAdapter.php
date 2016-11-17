@@ -108,7 +108,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function getMetadata($path)
     {
-        if (! $response = $this->head($path)) {
+        if ( ! $response = $this->head($path)) {
             return false;
         }
 
@@ -192,7 +192,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function read($path)
     {
-        if (! $response = $this->get($path)) {
+        if ( ! $response = $this->get($path)) {
             return false;
         }
 
@@ -207,7 +207,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     public function readStream($path)
     {
-        if (! $response = $this->get($path)) {
+        if ( ! $response = $this->get($path)) {
             return false;
         }
 
@@ -300,7 +300,7 @@ class GuzzleAdapter implements AdapterInterface
      */
     protected function head($path)
     {
-        if (! $this->supportsHead) {
+        if ( ! $this->supportsHead) {
             return $this->get($path);
         }
 
