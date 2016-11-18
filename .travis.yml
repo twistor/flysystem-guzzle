@@ -20,6 +20,7 @@ matrix:
 install:
   - travis_retry composer update $COMPOSER_OPTS --prefer-dist
   - if [ "$COMPOSER_OPTS" == "--prefer-lowest" ]; then composer require guzzlehttp/ringphp:1.0.7 --prefer-dist; fi
+  - if [ "$COMPOSER_OPTS" == "--prefer-lowest" ]; then composer require guzzlehttp/guzzle:5.3.1 --prefer-dist; fi
 
 script:
   - if [ "$TRAVIS_PHP_VERSION" == "hhvm" ] || [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then bin/phpunit; fi
