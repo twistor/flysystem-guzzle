@@ -10,16 +10,11 @@ php:
 
 sudo: false
 
-env:
-  - COMPOSER_OPTS=""
-  - COMPOSER_OPTS="--prefer-lowest"
-
 matrix:
   fast_finish: true
 
 install:
   - travis_retry composer update $COMPOSER_OPTS --prefer-dist
-  - if [ "$COMPOSER_OPTS" == "--prefer-lowest" ]; then composer require guzzlehttp/guzzle:5.3.1 --prefer-dist; fi
 
 script:
   - if [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then bin/phpunit; fi
